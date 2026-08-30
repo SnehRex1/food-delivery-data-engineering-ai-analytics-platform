@@ -1,0 +1,14 @@
+USE ROLE ACCOUNTADMIN;
+
+
+CREATE OR REPLACE STORAGE INTEGRATION FD_S3_INT
+  TYPE = EXTERNAL_STAGE
+  STORAGE_PROVIDER = 'S3'
+  ENABLED = TRUE
+  STORAGE_AWS_ROLE_ARN = 'arn:aws:iam::148852035837:role/fd-snowflake-s3-role'
+  STORAGE_ALLOWED_LOCATIONS = ('s3://fd-ai-data-pipeline-dev/');
+
+GRANT USAGE ON INTEGRATION FD_S3_INT TO ROLE DBT_ROLE;
+
+-- Run this, then copy the two values into the IAM role trust policy (Step D).
+DESC INTEGRATION FD_S3_INT;

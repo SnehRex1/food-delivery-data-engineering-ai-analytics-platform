@@ -1,0 +1,145 @@
+# ============================================================
+# ENVIRONMENT & SECRETS
+# ============================================================
+
+.env
+.env.*
+!.env.example
+
+*.pem
+*.key
+*.p12
+*.pfx
+
+# AWS credentials / local configuration
+.aws/
+aws/credentials
+aws/config
+aws/*.json
+
+# Snowflake credentials / private keys
+*.rsa
+*.rsa_key
+*.private_key
+
+
+# ============================================================
+# PYTHON
+# ============================================================
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+*.pyo
+*.pyd
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+
+
+# ============================================================
+# AIRFLOW
+# ============================================================
+
+airflow/logs/
+airflow/.env
+
+# Airflow local metadata / generated files
+airflow/__pycache__/
+
+# Airflow local databases
+airflow/airflow.db
+
+
+# ============================================================
+# DBT GENERATED FILES
+# ============================================================
+
+food_delivery_dbt/target/
+food_delivery_dbt/dbt_packages/
+food_delivery_dbt/logs/
+
+# dbt partial parsing
+food_delivery_dbt/target/
+
+
+# ============================================================
+# LARGE / GENERATED DATA
+# ============================================================
+
+# Do NOT upload source datasets
+data/
+
+# Generated embeddings
+ai_layer/review_embeddings.parquet
+
+# General large data files
+*.csv
+*.parquet
+*.feather
+*.pkl
+*.pickle
+
+# Except if you later explicitly want to version a small CSV:
+# !path/to/small/example.csv
+
+
+# ============================================================
+# LOGS
+# ============================================================
+
+logs/
+*.log
+
+# Application logs
+streamlit.log
+
+
+# ============================================================
+# IDE / OS
+# ============================================================
+
+.vscode/
+.idea/
+
+.DS_Store
+Thumbs.db
+
+# Windows
+*.lnk
+
+
+# ============================================================
+# TEMPORARY FILES
+# ============================================================
+
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Screenshots / temporary exports
+*.bak
+
+# dbt local configuration
+food_delivery_dbt/profiles.yml
+food_delivery_dbt/.user.yml
+
+# Local AI coding-agent configuration
+.agents/
+.claude/
