@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
@@ -28,12 +28,36 @@ COPY_RAW = [
 ]
 
 
+# ============================================================
+# AIRFLOW RELIABILITY SETTINGS
+# ============================================================
+# Tasks automatically retry transient failures twice.
+#
+# Between attempts Airflow waits five minutes.
+#
+# A task is not allowed to run longer than 30 minutes.
+# ============================================================
+
+default_args = {
+    "retries": 2,
+    "retry_delay": timedelta(minutes=5),
+    "execution_timeout": timedelta(minutes=30),
+}
+
+
 with DAG(
     dag_id="food_delivery_batch",
+
     start_date=datetime(2023, 1, 1),
+
     schedule="@daily",
+
     catchup=False,
+
     tags=["food_delivery", "batch", "dbt"],
+
+    default_args=default_args,
+
 ) as dag:
 
     reload_raw = SQLExecuteQueryOperator(
@@ -44,21 +68,41 @@ with DAG(
         autocommit=True,
     )
 
+
     dbt_build_core = BashOperator(
         task_id="dbt_build_core",
-        bash_command=f"{DBT} build --project-dir {DBT_PROJECT} --profiles-dir {DBT_PROJECT}",
-        
+
+        bash_command=(
+            f"{DBT} build "
+            f"--project-dir {DBT_PROJECT} "
+            f"--profiles-dir {DBT_PROJECT}"
+        ),
     )
-    
+
+
     enrich_reviews = BashOperator(
         task_id="enrich_reviews",
-        bash_command=f"python /opt/airflow/ai_layer/enrich_reviews.py",
+
+        bash_command=(
+            "python /opt/airflow/ai_layer/enrich_reviews.py"
+        ),
     )
+
 
     dbt_build_ai = BashOperator(
-        task_id = "dbt_build_ai",
-        bash_command=f"{DBT} build --select tag:ai --project-dir {DBT_PROJECT} --profiles-dir {DBT_PROJECT}"
+        task_id="dbt_build_ai",
+
+        bash_command=(
+            f"{DBT} build "
+            f"--select tag:ai "
+            f"--project-dir {DBT_PROJECT} "
+            f"--profiles-dir {DBT_PROJECT}"
+        ),
     )
 
-    reload_raw >> dbt_build_core >> enrich_reviews >> dbt_build_ai
 
+    # ========================================================
+    # PIPELINE DEPENDENCIES
+    # ========================================================
+
+    reload_raw >> dbt_build_core >> enrich_reviews >> dbt_build_ai
