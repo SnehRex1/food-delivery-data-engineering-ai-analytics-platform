@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Food Delivery Data Engineering &amp; AI Analytics Platform — Architecture</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+  :root{
+    --bg:#F4F6F9;
+    --paper:#FFFFFF;
+    --ink:#151B2B;
+    --ink-soft:#5B6472;
+    --ink-faint:#8A93A3;
+    --line:#DDE2E9;
+
+    --slate-tint:#EEF1F5;
+    --slate-line:#D3DAE3;
+
+    --blue-tint:#EAF3FC;
+    --blue:#1C74C4;
+    --blue-deep:#0E4D8C;
+    --blue-line:#C6DFF6;
+
+    --violet-tint:#F2EFFC;
+    --violet:#6E47E0;
+    --violet-line:#DCD3F7;
+
+    --coral:#E8590C;
+    --green:#1E8E5A;
+    --green-tint:#E7F6EE;
+    --red:#C22B2B;
+    --red-tint:#FBEAEA;
+
+    --mono:'IBM Plex Mono', ui-monospace, monospace;
+    --sans:'Inter', system-ui, sans-serif;
+    --disp:'Space Grotesk', 'Inter', system-ui, sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    font-family:var(--sans);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .sheet{ max-width:1880px; margin:0 auto; background:var(--paper); }
+
+  /* ---------- Header ---------- */
+  .header{
+    padding:36px 44px 26px;
+    border-bottom:1px solid var(--line);
+    display:flex; align-items:flex-end; justify-content:space-between; gap:24px; flex-wrap:wrap;
+  }
+  .header h1{
+    font-family:var(--disp); font-weight:700; font-size:30px; line-height:1.15;
+    margin:0 0 6px; letter-spacing:-0.01em;
+  }
+  .header p{ margin:0; color:var(--ink-soft); font-size:14.5px; }
+  .header .badge-row{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+  .tag{
+    font-family:var(--mono); font-size:11.5px; font-weight:600; color:var(--blue-deep);
+    background:var(--blue-tint); border:1px solid var(--blue-line);
+    padding:5px 10px; border-radius:6px;
+  }
+
+  /* ---------- Bands ---------- */
+  .band{ padding:26px 44px 30px; border-bottom:1px solid var(--line); }
+  .band:last-child{ border-bottom:none; }
+  .band-devops{ background:var(--slate-tint); }
+  .band-pipeline{ background:var(--blue-tint); }
+  .band-ai{ background:var(--violet-tint); }
+  .band-ops{ background:var(--slate-tint); }
+
+  .band-head{ display:flex; align-items:baseline; gap:10px; margin-bottom:18px; }
+  .band-num{
+    font-family:var(--disp); font-weight:700; font-size:13px;
+    width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    color:#fff; flex:none;
+  }
+  .band-devops .band-num, .band-ops .band-num{ background:var(--ink-soft); }
+  .band-pipeline .band-num{ background:var(--blue); }
+  .band-ai .band-num{ background:var(--violet); }
+  .band-title{ font-family:var(--disp); font-weight:700; font-size:19px; letter-spacing:-0.01em; }
+  .band-sub{ font-size:13px; color:var(--ink-soft); margin-left:4px; }
+
+  .row{ display:flex; align-items:stretch; gap:0; flex-wrap:wrap; }
+  .row.nowrap{ flex-wrap:nowrap; overflow-x:auto; padding-bottom:6px; }
+
+  /* ---------- Cards ---------- */
+  .card{
+    background:var(--paper); border:1px solid var(--line); border-radius:12px;
+    padding:16px 18px; box-shadow:0 1px 2px rgba(16,24,40,.04);
+  }
+  .card h4{
+    font-family:var(--disp); font-size:14.5px; font-weight:700; margin:0 0 4px; letter-spacing:-0.005em;
+  }
+  .card .cap{ font-size:12px; color:var(--ink-soft); margin:2px 0 10px; line-height:1.4; }
+  .step-tag{
+    font-family:var(--mono); font-size:10.5px; font-weight:700; color:var(--blue-deep);
+    background:var(--blue-tint); border:1px solid var(--blue-line); border-radius:5px;
+    padding:2px 7px; display:inline-block; margin-bottom:8px;
+  }
+
+  /* ---------- Connectors ---------- */
+  .connector{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-width:46px; padding:0 4px; flex:none;
+  }
+  .connector .lbl{
+    font-family:var(--mono); font-size:10px; color:var(--ink-soft); white-space:nowrap; margin-bottom:4px;
+  }
+  .connector .line{ width:100%; height:2px; background:var(--slate-line); position:relative; min-width:24px; }
+  .connector .line::after{
+    content:''; position:absolute; right:-1px; top:50%; transform:translateY(-50%);
+    border-style:solid; border-width:5px 0 5px 8px; border-color:transparent transparent transparent var(--slate-line);
+  }
+  .connector.blue .line, .connector.blue .line::after{ background:var(--blue); border-left-color:var(--blue); }
+  .connector.violet .line, .connector.violet .line::after{ background:var(--violet); border-left-color:var(--violet); }
+
+  .vconnector{ display:flex; flex-direction:column; align-items:center; padding:6px 0; }
+  .vconnector .line{ width:2px; height:20px; background:var(--slate-line); position:relative; }
+  .vconnector .line::after{
+    content:''; position:absolute; bottom:-1px; left:50%; transform:translateX(-50%);
+    border-style:solid; border-width:8px 5px 0 5px; border-color:var(--slate-line) transparent transparent transparent;
+  }
+
+  /* ---------- Chips / pills ---------- */
+  .chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .chip{
+    font-family:var(--mono); font-size:11px; font-weight:600; padding:3px 8px;
+    border-radius:5px; background:#F3F5F8; border:1px solid var(--line); color:var(--ink);
+  }
+  .chip.blue{ background:var(--blue-tint); border-color:var(--blue-line); color:var(--blue-deep); }
+  .chip.violet{ background:var(--violet-tint); border-color:var(--violet-line); color:var(--violet); }
+  .chip.coral{ background:#FDEEE6; border-color:#F6C9A9; color:var(--coral); }
+
+  /* ---------- Schema lists ---------- */
+  .schema-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; }
+  .schema-list li{
+    font-family:var(--mono); font-size:12px; font-weight:500;
+    background:#F8FAFC; border:1px solid var(--line); border-radius:6px;
+    padding:5px 8px; display:flex; align-items:center; justify-content:space-between; gap:8px;
+  }
+  .schema-list.dim li{ background:#F2F6FC; }
+  .schema-list.fact li{ background:#FDF3EC; }
+  .schema-list.mart li{ background:var(--green-tint); border-color:#BFE3CE; }
+  .schema-group-label{ font-size:10.5px; font-weight:700; color:var(--ink-faint); letter-spacing:.03em; margin:8px 0 4px; }
+  .schema-group-label:first-child{ margin-top:0; }
+
+  .check{
+    flex:none; width:15px; height:15px; border-radius:50%; background:var(--green);
+    color:#fff; font-size:10px; display:flex; align-items:center; justify-content:center; font-weight:700;
+  }
+
+  /* ---------- Status pills ---------- */
+  .status{
+    display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700;
+    padding:5px 11px; border-radius:20px; margin-top:10px;
+  }
+  .status.pass{ background:var(--green-tint); color:var(--green); border:1px solid #BFE3CE; }
+  .status.stop{ background:var(--red-tint); color:var(--red); border:1px solid #F0C4C4; }
+
+  /* ---------- Specific layout helpers ---------- */
+  .pipeline-flow{ display:flex; align-items:stretch; gap:0; overflow-x:auto; padding-bottom:8px; }
+  .pipeline-flow .card{ min-width:210px; flex:1 1 210px; }
+  .pipeline-flow .card.wide{ min-width:250px; flex:1.3 1 250px; }
+
+  .gov-panel{ margin-top:18px; }
+  .gov-grid{ display:flex; gap:16px; flex-wrap:wrap; }
+  .gov-card{ flex:1 1 260px; }
+  .role-chain{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .role-box{
+    font-family:var(--mono); font-size:11px; font-weight:600; padding:5px 10px; border-radius:6px;
+    background:#F3F5F8; border:1px solid var(--line);
+  }
+  .role-box.ro{ background:var(--green-tint); border-color:#BFE3CE; color:var(--green); }
+  .pii-row{ display:flex; align-items:center; gap:10px; margin-top:10px; font-family:var(--mono); font-size:12px; }
+  .pii-row .masked{ color:var(--ink-faint); }
+  .arrow-mini{ color:var(--ink-faint); }
+
+  /* ---------- AI band columns ---------- */
+  .ai-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+  .ai-col{
+    background:var(--paper); border:1px solid var(--violet-line); border-radius:14px; padding:20px;
+  }
+  .ai-col h3{ font-family:var(--disp); font-size:16px; font-weight:700; margin:0 0 3px; }
+  .ai-col .sub{ font-size:12px; color:var(--ink-soft); margin:0 0 14px; }
+  .ai-flow{ display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+  .ai-node{
+    background:#FBFAFE; border:1px solid var(--violet-line); border-radius:8px;
+    padding:8px 10px; font-size:11.5px; font-weight:600; text-align:center; min-width:86px;
+  }
+  .ai-node.mono{ font-family:var(--mono); font-size:11px; }
+  .ai-arrow{ color:var(--violet); font-weight:700; font-size:14px; flex:none; }
+  .json-box{
+    font-family:var(--mono); font-size:11px; background:#1A1330; color:#E4DBFF;
+    border-radius:8px; padding:10px 12px; line-height:1.6; margin:10px 0;
+  }
+  .json-box .k{ color:#B9A5FF; }
+
+  /* ---------- Ops band ---------- */
+  .ops-grid{ display:grid; grid-template-columns:1.1fr 1.3fr 1fr; gap:20px; align-items:stretch; }
+  .dag-chain{ display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin-top:14px; }
+  .dag-node{
+    font-family:var(--mono); font-size:11.5px; font-weight:600; background:var(--green-tint);
+    border:1px solid #BFE3CE; color:#166642; border-radius:7px; padding:7px 10px;
+  }
+  .story-card{ font-size:13px; line-height:1.65; color:var(--ink); }
+  .story-card .eyebrow{ font-size:11px; font-weight:700; color:var(--ink-faint); margin-bottom:8px; }
+  .tools-grid{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+  .tool-chip{
+    display:flex; align-items:center; gap:6px; font-size:12px; font-weight:600;
+    background:#F3F5F8; border:1px solid var(--line); border-radius:7px; padding:6px 10px;
+  }
+  .tool-chip .dot{ width:8px; height:8px; border-radius:50%; background:var(--green); flex:none; }
+  .sec-grid{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .sec-chip{
+    font-family:var(--mono); font-size:11px; font-weight:600; background:var(--slate-tint);
+    border:1px solid var(--slate-line); border-radius:6px; padding:5px 9px;
+  }
+
+  footer{ padding:18px 44px 30px; text-align:center; color:var(--ink-faint); font-size:11.5px; }
+
+  @media (max-width:1100px){
+    .ai-grid, .ops-grid{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="header">
+    <div>
+      <h1>Food delivery data engineering &amp; AI analytics platform</h1>
+      <p>Modern hardened architecture — ingestion through governed marts to an AI layer</p>
+    </div>
+    <div class="badge-row">
+      <span class="tag">SNOWFLAKE</span>
+      <span class="tag">DBT</span>
+      <span class="tag">AIRFLOW</span>
+      <span class="tag">GEMINI</span>
+      <span class="tag">STREAMLIT</span>
+    </div>
+  </div>
+
+  <!-- ============ BAND: DEVOPS / CI ============ -->
+  <div class="band band-devops">
+    <div class="band-head">
+      <div class="band-title">Continuous integration</div>
+      <div class="band-sub">GitHub &amp; GitHub Actions — every change is validated before it merges</div>
+    </div>
+    <div class="row nowrap" style="gap:0; align-items:center;">
+      <div class="card" style="min-width:230px;">
+        <h4>GitHub repository</h4>
+        <div class="cap">Source of truth for the project</div>
+        <div class="chips">
+          <span class="chip">Python</span><span class="chip">SQL</span><span class="chip coral">dbt</span>
+          <span class="chip">Airflow DAGs</span><span class="chip">Configs</span><span class="chip violet">AI</span>
+        </div>
+      </div>
+      <div class="connector"><span class="lbl">push / PR</span><div class="line"></div></div>
+      <div class="card" style="min-width:230px;">
+        <h4>GitHub Actions</h4>
+        <div class="cap">Runs on every pull request</div>
+        <ul style="margin:0; padding-left:16px; font-size:12.5px; color:var(--ink); line-height:1.7;">
+          <li>dbt parse &amp; compile check</li>
+          <li>Project &amp; config validation</li>
+        </ul>
+      </div>
+      <div class="connector"><span class="lbl">pass / fail</span><div class="line"></div></div>
+      <div class="card" style="min-width:210px;">
+        <h4>Merge gate</h4>
+        <div class="cap">Automated checks must pass before code reaches main</div>
+        <span class="status pass">✓ checks required</span>
+      </div>
+      <div class="connector"><div class="line"></div></div>
+      <div class="card" style="min-width:340px; background:#FBFCFD;">
+        <h4>Data flow at a glance</h4>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-family:var(--mono); font-size:11.5px; margin-top:8px;">
+          <span class="chip">Sources</span><span class="arrow-mini">→</span>
+          <span class="chip blue">S3 data lake</span><span class="arrow-mini">→</span>
+          <span class="chip blue">Snowflake RAW</span><span class="arrow-mini">→</span>
+          <span class="chip blue">dbt staging</span><span class="arrow-mini">→</span>
+          <span class="chip blue">dbt core (star schema)</span>
+        </div>
+        <div class="cap" style="margin-top:8px;">Incremental fact processing, tested at every layer</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ BAND: CORE PIPELINE ============ -->
+  <div class="band band-pipeline">
+    <div class="band-head">
+      <div class="band-num">1–5</div>
+      <div class="band-title">Data engineering pipeline</div>
+      <div class="band-sub">Raw CSVs to a governed, curated analytical warehouse</div>
+    </div>
+
+    <div class="pipeline-flow">
+      <div class="card wide">
+        <span class="step-tag">STEP 1</span>
+        <h4>Data ingestion</h4>
+        <div class="cap">7 CSV source folders, uploaded to the lake</div>
+        <div class="chips">
+          <span class="chip">Restaurants</span><span class="chip">Users</span><span class="chip">Food</span>
+          <span class="chip">Menu</span><span class="chip">Orders</span><span class="chip">Order Items</span><span class="chip">Reviews</span>
+        </div>
+        <div class="cap" style="margin-top:10px; font-weight:600; color:var(--blue-deep);">→ AWS S3 data lake</div>
+      </div>
+
+      <div class="connector blue"><span class="lbl">COPY INTO</span><div class="line"></div></div>
+
+      <div class="card">
+        <span class="step-tag">STEP 2</span>
+        <h4>Snowflake RAW schema</h4>
+        <div class="cap">External stage, external S3 COPY INTO</div>
+        <ul class="schema-list">
+          <li>RESTAURANTS <span class="check">✓</span></li>
+          <li>USERS <span class="check">✓</span></li>
+          <li>FOOD <span class="check">✓</span></li>
+          <li>MENU <span class="check">✓</span></li>
+          <li>ORDERS <span class="check">✓</span></li>
+          <li>ORDER_ITEMS <span class="check">✓</span></li>
+          <li>REVIEWS <span class="check">✓</span></li>
+        </ul>
+      </div>
+
+      <div class="connector blue"><span class="lbl">dbt build</span><div class="line"></div></div>
+
+      <div class="card">
+        <span class="step-tag">STEP 3</span>
+        <h4>Staging models</h4>
+        <div class="cap">Cleaning, casting, standardized types</div>
+        <ul class="schema-list">
+          <li>STG_RESTAURANTS <span class="check">✓</span></li>
+          <li>STG_USERS <span class="check">✓</span></li>
+          <li>STG_FOOD <span class="check">✓</span></li>
+          <li>STG_MENU <span class="check">✓</span></li>
+          <li>STG_ORDERS <span class="check">✓</span></li>
+          <li>STG_ORDER_ITEMS <span class="check">✓</span></li>
+          <li>STG_REVIEWS <span class="check">✓</span></li>
+        </ul>
+      </div>
+
+      <div class="connector blue"><span class="lbl">model</span><div class="line"></div></div>
+
+      <div class="card wide">
+        <span class="step-tag">STEP 4</span>
+        <h4>Core analytics warehouse</h4>
+        <div class="cap">Curated dimensional facts &amp; downstream marts</div>
+        <div class="schema-group-label">Dimensions</div>
+        <ul class="schema-list dim">
+          <li>DIM_CUSTOMER</li><li>DIM_DATE</li><li>DIM_FOOD</li><li>DIM_RESTAURANTS</li>
+        </ul>
+        <div class="schema-group-label">Facts</div>
+        <ul class="schema-list fact">
+          <li>FCT_ORDERS</li><li>FCT_ORDER_ITEMS</li>
+        </ul>
+        <div class="schema-group-label">Downstream marts</div>
+        <ul class="schema-list mart">
+          <li>MART_DAILY_CITY_REVENUE <span class="check">✓</span></li>
+          <li>MART_DELIVERY_SLA <span class="check">✓</span></li>
+          <li>MART_REVIEW_INSIGHTS <span class="check">✓</span></li>
+        </ul>
+      </div>
+
+      <div class="connector blue"><span class="lbl">test</span><div class="line"></div></div>
+
+      <div class="card" style="min-width:200px;">
+        <span class="step-tag">STEP 5</span>
+        <h4>Data quality gate</h4>
+        <div class="cap">dbt build → dbt test, on every run</div>
+        <ul style="margin:0 0 10px; padding-left:16px; font-size:12px; line-height:1.75;">
+          <li>unique</li><li>not_null</li><li>relationships</li><li>accepted_values</li>
+        </ul>
+        <span class="status pass">✓ PASS → downstream</span><br>
+        <span class="status stop">✕ FAIL → pipeline stops</span>
+      </div>
+    </div>
+
+    <!-- Governance -->
+    <div class="gov-panel">
+      <div class="gov-grid">
+        <div class="card gov-card">
+          <h4>Governance &amp; access — implemented</h4>
+          <div class="cap">Snowflake RBAC scopes every role to what it needs</div>
+          <div class="role-chain">
+            <span class="role-box">SNOWFLAKE</span><span class="arrow-mini">→</span>
+            <span class="role-box">DBT_ROLE</span>
+            <span class="role-box">ANALYST_ROLE</span>
+            <span class="role-box ro">AI_ROLE · read-only</span>
+          </div>
+        </div>
+        <div class="card gov-card">
+          <h4>PII masking — implemented</h4>
+          <div class="cap">Dynamic data masking on sensitive columns</div>
+          <div class="pii-row">
+            <span>pihc@gmail.com</span><span class="arrow-mini">→</span><span class="masked">p***@gmail.com</span>
+          </div>
+        </div>
+        <div class="card gov-card">
+          <h4>Consumption</h4>
+          <div class="cap">Governed marts feed both BI and the AI layer below</div>
+          <span class="status pass">✓ curated marts → AI apps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ BAND: AI LAYER ============ -->
+  <div class="band band-ai">
+    <div class="band-head">
+      <div class="band-num">AI</div>
+      <div class="band-title">AI layer — three integrated capabilities</div>
+      <div class="band-sub">Built on the same governed Snowflake marts</div>
+    </div>
+
+    <div class="ai-grid">
+      <div class="ai-col">
+        <h3>1 · Review enrichment</h3>
+        <div class="sub">Python + Gemini, batch summarization</div>
+        <div class="ai-flow">
+          <div class="ai-node mono">STG_REVIEWS</div>
+          <span class="ai-arrow">→</span>
+          <div class="ai-node">Gemini summary</div>
+        </div>
+        <div class="json-box">
+          {<br>
+          &nbsp;&nbsp;<span class="k">"sentiment"</span>: "...",<br>
+          &nbsp;&nbsp;<span class="k">"topic"</span>: "...",<br>
+          &nbsp;&nbsp;<span class="k">"key_issue"</span>: "..."<br>
+          }
+        </div>
+        <div class="ai-flow">
+          <span style="font-size:12px; color:var(--ink-soft);">written to</span>
+          <span class="ai-arrow">→</span>
+          <div class="ai-node mono">MART_REVIEW_INSIGHTS</div>
+        </div>
+        <div class="cap">Keeps a source link back to the original review</div>
+        <span class="status pass">✓ implemented</span>
+      </div>
+
+      <div class="ai-col">
+        <h3>2 · RAG review chat</h3>
+        <div class="sub">Unstructured, conversational search over reviews</div>
+        <div class="ai-flow">
+          <div class="ai-node">CSV reviews</div><span class="ai-arrow">→</span>
+          <div class="ai-node">Gemini embeddings</div>
+        </div>
+        <div class="ai-flow">
+          <div class="ai-node mono">review_embeddings.parquet</div>
+        </div>
+        <div class="ai-flow">
+          <div class="ai-node">Cosine similarity, top-K</div><span class="ai-arrow">→</span>
+          <div class="ai-node">Streamlit chat UI</div>
+        </div>
+        <div class="cap">Business users ask questions in plain language</div>
+        <span class="status pass">✓ conversational review chat</span>
+      </div>
+
+      <div class="ai-col">
+        <h3>3 · Text-to-SQL</h3>
+        <div class="sub">Structured chat over the Snowflake marts</div>
+        <div class="ai-flow">
+          <div class="ai-node">User question</div><span class="ai-arrow">→</span>
+          <div class="ai-node">Streamlit app</div>
+        </div>
+        <div class="ai-flow">
+          <div class="ai-node">Gemini: generate SQL</div><span class="ai-arrow">→</span>
+          <div class="ai-node">Safety validation</div>
+        </div>
+        <div class="ai-flow">
+          <div class="ai-node mono">Snowflake marts</div><span class="ai-arrow">→</span>
+          <div class="ai-node">Pandas DataFrame</div>
+        </div>
+        <div class="cap">Rendered back in the Streamlit UI</div>
+        <span class="status pass">✓ connected to marts</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ BAND: ORCHESTRATION & FOUNDATIONS ============ -->
+  <div class="band band-ops">
+    <div class="band-head">
+      <div class="band-title">Orchestration &amp; foundations</div>
+    </div>
+    <div class="ops-grid">
+      <div class="card">
+        <h4>Airflow DAG</h4>
+        <div class="cap">Daily, incremental &amp; idempotent</div>
+        <div class="dag-chain">
+          <span class="dag-node">reload_raw</span><span class="arrow-mini">→</span>
+          <span class="dag-node">dbt_build_core</span><span class="arrow-mini">→</span>
+          <span class="dag-node">enrich_reviews</span><span class="arrow-mini">→</span>
+          <span class="dag-node">dbt_build_ai</span>
+        </div>
+      </div>
+
+      <div class="card story-card">
+        <div class="eyebrow">HOW I'D DESCRIBE THIS PROJECT</div>
+        I built a cloud-based food delivery data platform using AWS S3 and Snowflake, with dbt handling modeling and data-quality testing, and Airflow orchestrating the pipeline end to end. Processing is incremental and idempotent. Snowflake RBAC and PII masking cover governance, and GitHub Actions run CI on every pull request. The curated Snowflake marts power both analytical dashboards and an AI layer — review enrichment, a RAG-based review chat, and text-to-SQL.
+      </div>
+
+      <div class="card">
+        <h4>Tools &amp; security</h4>
+        <div class="tools-grid">
+          <span class="tool-chip"><span class="dot"></span>Python</span>
+          <span class="tool-chip"><span class="dot"></span>Pandas</span>
+          <span class="tool-chip"><span class="dot"></span>Snowflake</span>
+          <span class="tool-chip"><span class="dot"></span>dbt</span>
+          <span class="tool-chip"><span class="dot"></span>Gemini</span>
+          <span class="tool-chip"><span class="dot"></span>Streamlit</span>
+          <span class="tool-chip"><span class="dot"></span>Airflow</span>
+        </div>
+        <div class="sec-grid">
+          <span class="sec-chip">IAM</span><span class="sec-chip">KMS</span><span class="sec-chip">Network policies</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Zomato-style food delivery data platform — architecture overview</footer>
+</div>
+</body>
+</html>
