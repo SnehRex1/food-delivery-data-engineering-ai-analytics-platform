@@ -1,6 +1,6 @@
 # Food Delivery Data Engineering & AI Analytics Platform
 
-![dbt CI](https://github.com/SnehRex1/food-delivery-data-engineering-ai-analytics-platform/actions/workflows/dbt_ci.yml/badge.svg
+![dbt CI](https://github.com/SnehRex1/food-delivery-data-engineering-ai-analytics-platform/actions/workflows/dbt_ci.yml/badge.svg)
 
 > An end-to-end **Data Engineering + AI Analytics platform** for a food
 > delivery business, built with **Amazon S3, Snowflake, dbt, Apache
