@@ -207,7 +207,25 @@ This is designed as a **portfolio-grade, production-style Data Engineering proje
 
 ## 📊 Data Sources
 
-The platform works with seven food-delivery source domains:
+The platform works with **7 food-delivery source domains**, covering master data, transactional data, and unstructured customer reviews.
+
+### Dataset at a glance
+
+| Dataset | Approx. Records | Description |
+|---|---:|---|
+| Restaurants | — | Restaurant master data |
+| Users | — | Customer / user information |
+| Food | — | Food item master data |
+| Menu | — | Restaurant menu mappings |
+| Orders | **10M+** | Order-level transactional data |
+| Order Items | **23M+** | Item-level order details |
+| Reviews | **300K+** | Unstructured customer review text |
+
+**Scale:** **33M+ records** across the major transactional and review datasets, in addition to the supporting master-data domains.
+
+> **Note:** The exact row counts can vary depending on the downloaded dataset version. The figures above describe the dataset scale used for this project.
+
+### Source domains
 
 ```text
 data/
@@ -221,6 +239,8 @@ data/
 ```
 
 The raw files are intentionally **not committed to Git** because of their size. They are downloaded separately and then placed under `data/` for local use.
+
+This dataset scale is also one of the reasons the platform demonstrates **incremental, MERGE-based processing** for large fact models instead of rebuilding the complete analytical layer on every run.
 
 ---
 
