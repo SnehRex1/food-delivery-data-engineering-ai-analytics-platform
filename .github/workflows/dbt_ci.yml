@@ -1,0 +1,151 @@
+# ============================================================
+# dbt CI Workflow
+# ============================================================
+#
+# Purpose:
+#   Validate the dbt project automatically whenever code
+#   is pushed to main or a Pull Request targets main.
+#
+# Important:
+#   This workflow intentionally uses `dbt parse`.
+#
+#   dbt parse validates:
+#       - SQL/Jinja syntax
+#       - model configuration
+#       - refs
+#       - sources
+#       - tests
+#       - project structure
+# ============================================================
+
+name: dbt CI
+
+# ------------------------------------------------------------
+# When should GitHub Actions run?
+# ------------------------------------------------------------
+on:
+  # Run whenever code is pushed to main
+  push:
+    branches:
+      - main
+
+  # Run whenever somebody creates/updates a Pull Request
+  # targeting main
+  pull_request:
+    branches:
+      - main
+
+# ------------------------------------------------------------
+# Jobs
+# ------------------------------------------------------------
+jobs:
+  dbt-validate:
+    # GitHub provides a temporary Ubuntu machine
+    runs-on: ubuntu-latest
+
+    # All shell commands below run from our dbt project folder
+    defaults:
+      run:
+        working-directory: food_delivery_dbt
+
+    steps:
+      # ------------------------------------------------------
+      # 1. Download repository code
+      # ------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ------------------------------------------------------
+      # 2. Install Python
+      # ------------------------------------------------------
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # ------------------------------------------------------
+      # 3. Install dbt
+      # ------------------------------------------------------
+      #
+      # dbt-core:
+      #   Core dbt framework
+      #
+      # dbt-snowflake:
+      #   Snowflake adapter
+      #
+      # ------------------------------------------------------
+
+      - name: Install dbt
+        run: |
+          pip install dbt-core dbt-snowflake
+
+      # ------------------------------------------------------
+      # 4. Create a dummy dbt profile
+      # ------------------------------------------------------
+      #
+      # dbt expects a profiles.yml file.
+      #
+      # We provide dummy Snowflake credentials because:
+      #
+      #   dbt parse
+      #
+      # does not actually connect to Snowflake.
+      #
+      # Therefore:
+      #
+      #   account = ci
+      #   user    = ci
+      #   password = ci
+      #
+      # are only placeholders.
+      # ------------------------------------------------------
+
+      - name: Create CI dbt profile
+        run: |
+          mkdir -p ~/.dbt
+
+          cat > ~/.dbt/profiles.yml << 'EOF'
+
+          food_delivery_dbt:
+
+            # Tell dbt to use the CI target below
+            target: ci
+
+            outputs:
+
+              ci:
+
+                # Our project uses Snowflake
+                type: snowflake
+
+                # Dummy values.
+                # dbt parse will not connect to Snowflake.
+                account: "ci"
+                user: "ci"
+                password: "ci"
+                role: "ci"
+
+                # Warehouse metadata expected by dbt
+                database: FOOD_DELIVERY
+                warehouse: FD_WH
+                schema: DEV
+
+                # Number of dbt threads
+                threads: 4
+
+          EOF
+
+      # ------------------------------------------------------
+      # 5. Validate the dbt project
+      # ------------------------------------------------------
+      #
+      # This is the actual CI validation.
+      #
+      # dbt parse checks the project without executing models.
+      # ------------------------------------------------------
+
+      - name: Validate dbt project
+        run: |
+          dbt parse \
+            --project-dir . \
+            --profiles-dir ~/.dbt
