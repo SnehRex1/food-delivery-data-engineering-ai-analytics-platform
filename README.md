@@ -1,5 +1,7 @@
 # Food Delivery Data Engineering & AI Analytics Platform
 
+![dbt CI](https://github.com/SnehRex1/food-delivery-data-engineering-ai-analytics-platform/actions/workflows/dbt_ci.yml/badge.svg
+
 > An end-to-end **Data Engineering + AI Analytics platform** for a food
 > delivery business, built with **Amazon S3, Snowflake, dbt, Apache
 > Airflow, Python, Google Gemini, RAG, and Streamlit**.
@@ -9,7 +11,7 @@ into Snowflake, transforms it through a dbt-based analytical pipeline,
 enriches customer reviews using Gemini, and exposes the data through
 RAG-based review analysis and natural-language Text-to-SQL analytics.
 
-------------------------------------------------------------------------
+---
 
 ## Architecture
 
@@ -18,7 +20,7 @@ Platform](docs/architecture.png)
 
 ### High-Level Architecture
 
-``` text
+```text
 CSV Data
    |
    v
@@ -59,7 +61,7 @@ Business Analytics   Review AI Enrichment    AI Applications
                                                   Streamlit
 ```
 
-------------------------------------------------------------------------
+---
 
 # Project Overview
 
@@ -73,99 +75,101 @@ reviews**.
 
 The platform supports analytics around:
 
--   Orders
--   Order items
--   Restaurants
--   Customers
--   Food
--   Cities
--   Payment methods
--   Revenue
--   Delivery performance
--   Cancellation rates
+- Orders
+- Order items
+- Restaurants
+- Customers
+- Food
+- Cities
+- Payment methods
+- Revenue
+- Delivery performance
+- Cancellation rates
 
 ### Unstructured Data
 
 Customer reviews are processed using **Google Gemini** to extract:
 
--   Sentiment label
--   Sentiment score
--   Review topic
--   Key issue
+- Sentiment label
+- Sentiment score
+- Review topic
+- Key issue
 
 The enriched review data is then used for downstream analytics and
 conversational review analysis.
 
-------------------------------------------------------------------------
+---
 
 # Key Features
 
 ## Data Engineering
 
--   CSV-based food delivery datasets
--   Amazon S3 as the data lake
--   Snowflake as the cloud data warehouse
--   Snowflake external stage and `COPY INTO`
--   RAW -\> STAGING -\> MART architecture
--   dbt-based SQL transformations
--   Dimensional and fact modeling
--   Analytical marts
--   dbt data tests
--   dbt lineage and documentation
+- CSV-based food delivery datasets
+- Amazon S3 as the data lake
+- Snowflake as the cloud data warehouse
+- Snowflake external stage and `COPY INTO`
+- RAW -\> STAGING -\> MART architecture
+- dbt-based SQL transformations
+- Dimensional and fact modeling
+- Analytical marts
+- dbt data tests
+- dbt lineage and documentation
 
 ## Orchestration
 
--   Apache Airflow DAG
--   Automated RAW ingestion
--   dbt core build
--   Gemini review enrichment
--   AI-specific dbt build
--   Sequential task dependencies
+- Apache Airflow DAG
+- Automated RAW ingestion
+- dbt core build
+- Gemini review enrichment
+- AI-specific dbt build
+- Sequential task dependencies
 
 ## Generative AI
 
--   Google Gemini for review classification
--   Gemini embeddings for semantic search
--   RAG-based conversational review analysis
--   Gemini-powered Text-to-SQL
--   SQL safety validation
--   Natural-language access to Snowflake analytics
+- Google Gemini for review classification
+- Gemini embeddings for semantic search
+- RAG-based conversational review analysis
+- Gemini-powered Text-to-SQL
+- SQL safety validation
+- Natural-language access to Snowflake analytics
 
 ## Applications
 
--   Streamlit RAG review application
--   Streamlit Text-to-SQL analytics application
--   Generated SQL visibility
--   Query result tables
--   Analytical result presentation
+- Streamlit RAG review application
+- Streamlit Text-to-SQL analytics application
+- Generated SQL visibility
+- Query result tables
+- Analytical result presentation
 
-------------------------------------------------------------------------
+---
 
 # Technology Stack
 
-  Category           Technology
-  ------------------ ------------------------
-  Data Lake          Amazon S3
-  Data Warehouse     Snowflake
-  Transformation     dbt
-  Orchestration      Apache Airflow
-  Programming        Python
-  AI / LLM           Google Gemini
-  Embeddings         Gemini Embedding Model
-  Vector Storage     Parquet
-  Data Processing    Pandas, NumPy
-  Applications       Streamlit
-  Containerization   Docker
-  SQL                Snowflake SQL
-  Version Control    Git
+Category Technology
 
-------------------------------------------------------------------------
+---
+
+Data Lake Amazon S3
+Data Warehouse Snowflake
+Transformation dbt
+Orchestration Apache Airflow
+Programming Python
+AI / LLM Google Gemini
+Embeddings Gemini Embedding Model
+Vector Storage Parquet
+Data Processing Pandas, NumPy
+Applications Streamlit
+Containerization Docker
+SQL Snowflake SQL
+Version Control Git
+
+---
 
 # Data Sources
 
 The project contains seven source datasets:
 
-``` text
+```text
 data/
 ├── restaurants/
 ├── users/
@@ -179,13 +183,13 @@ data/
 These CSV datasets are uploaded to Amazon S3 and organized into
 corresponding folders.
 
-------------------------------------------------------------------------
+---
 
 # End-to-End Data Flow
 
 ## 1. Data Ingestion
 
-``` text
+```text
 CSV Files
    |
    v
@@ -203,7 +207,7 @@ RAW Tables
 
 The Snowflake RAW layer contains:
 
-``` text
+```text
 RAW.RESTAURANTS
 RAW.USERS
 RAW.FOOD
@@ -215,19 +219,19 @@ RAW.REVIEWS
 
 Example:
 
-``` sql
+```sql
 COPY INTO RAW.RESTAURANTS
 FROM @FD_RAW_STAGE/restaurant/
 ON_ERROR = 'CONTINUE';
 ```
 
-------------------------------------------------------------------------
+---
 
 # 2. Snowflake RAW Layer
 
 The raw data is loaded into the `FOOD_DELIVERY.RAW` schema.
 
-``` text
+```text
 FOOD_DELIVERY
 └── RAW
     ├── FOOD
@@ -242,14 +246,14 @@ FOOD_DELIVERY
 The RAW layer preserves the ingested source data before dbt
 transformations.
 
-------------------------------------------------------------------------
+---
 
 # 3. dbt STAGING Layer
 
 dbt transforms the RAW tables into cleaned and standardized staging
 models.
 
-``` text
+```text
 RAW
  |
  v
@@ -258,7 +262,7 @@ STAGING
 
 Models:
 
-``` text
+```text
 STG_FOOD
 STG_MENU
 STG_ORDERS
@@ -270,13 +274,13 @@ STG_USERS
 
 The staging layer handles:
 
--   Column standardization
--   Type casting
--   Cleaning
--   Source normalization
--   Preparing data for analytical modeling
+- Column standardization
+- Type casting
+- Cleaning
+- Source normalization
+- Preparing data for analytical modeling
 
-------------------------------------------------------------------------
+---
 
 # 4. dbt MARTS Layer
 
@@ -284,7 +288,7 @@ The cleaned staging data is transformed into analytical models.
 
 ## Dimensions
 
-``` text
+```text
 DIM_CUSTOMER
 DIM_DATE
 DIM_FOOD
@@ -293,14 +297,14 @@ DIM_RESTAURANTS
 
 ## Facts
 
-``` text
+```text
 FCT_ORDERS
 FACT_ORDER_ITEMS
 ```
 
 ## Business Marts
 
-``` text
+```text
 MART_DAILY_CITY_REVENUE
 MART_DELIVERY_SLA
 MART_RESTAURANT_PERFORMANCE
@@ -308,13 +312,13 @@ MART_RESTAURANT_PERFORMANCE
 
 These models provide business-ready datasets for analytical queries.
 
-------------------------------------------------------------------------
+---
 
 # 5. AI Review Enrichment
 
 Customer reviews are processed using Python and Gemini.
 
-``` text
+```text
 STG_REVIEWS
       |
       v
@@ -334,7 +338,7 @@ AI.REVIEW_ENRICHED
 
 Example:
 
-``` text
+```text
 Review:
 "Gravy spilled all over the bag."
 
@@ -347,20 +351,20 @@ key_issue       = gravy spilled in the bag
 
 The enriched results are written to:
 
-``` text
+```text
 FOOD_DELIVERY.AI.REVIEW_ENRICHED
 ```
 
 This keeps AI-enriched data separate from the core analytical schemas.
 
-------------------------------------------------------------------------
+---
 
 # 6. AI dbt Model
 
 The enriched review data is combined with review information through
 dbt.
 
-``` text
+```text
 AI.REVIEW_ENRICHED
         |
         +------+
@@ -373,34 +377,34 @@ MART_REVIEW_INSIGHTS
 
 `MART_REVIEW_INSIGHTS` provides:
 
--   City
--   Review topic
--   Sentiment
--   Number of reviews
--   Average sentiment score
--   Average star rating
--   Number of flagged issues
+- City
+- Review topic
+- Sentiment
+- Number of reviews
+- Average sentiment score
+- Average star rating
+- Number of flagged issues
 
 The model is tagged:
 
-``` yaml
+```yaml
 tags:
   - ai
 ```
 
 Therefore it can be built independently:
 
-``` bash
+```bash
 dbt build --select tag:ai
 ```
 
-------------------------------------------------------------------------
+---
 
 # 7. RAG Chat Application
 
 The RAG application provides conversational access to customer reviews.
 
-``` text
+```text
 Customer Reviews
        |
        v
@@ -434,14 +438,14 @@ the application:
 4.  Uses those reviews as context.
 5.  Generates a grounded answer with Gemini.
 
-------------------------------------------------------------------------
+---
 
 # 8. Text-to-SQL Application
 
 The second AI application allows users to query Snowflake marts using
 natural language.
 
-``` text
+```text
 User Question
       |
       v
@@ -468,14 +472,14 @@ Streamlit Results
 
 Example:
 
-``` text
+```text
 User:
 Top 10 cities by GMV
 ```
 
 Example generated SQL:
 
-``` sql
+```sql
 SELECT
     city,
     SUM(gmv) AS total_gmv
@@ -487,7 +491,7 @@ LIMIT 10;
 
 The generated SQL is displayed before execution.
 
-------------------------------------------------------------------------
+---
 
 # SQL Safety
 
@@ -495,7 +499,7 @@ The Text-to-SQL application validates generated SQL before execution.
 
 Read-oriented queries such as:
 
-``` text
+```text
 SELECT
 WITH
 ```
@@ -504,7 +508,7 @@ are permitted.
 
 Potentially destructive operations are rejected, including:
 
-``` text
+```text
 DROP
 DELETE
 TRUNCATE
@@ -520,7 +524,7 @@ REVOKE
 This provides an additional guardrail between LLM-generated SQL and
 Snowflake.
 
-------------------------------------------------------------------------
+---
 
 # Orchestration with Airflow
 
@@ -528,13 +532,13 @@ The complete pipeline is orchestrated with Apache Airflow.
 
 ### DAG
 
-``` text
+```text
 food_delivery_batch
 ```
 
 ### Task Flow
 
-``` text
+```text
 reload_raw
      |
      v
@@ -549,7 +553,7 @@ dbt_build_ai
 
 The DAG dependency is:
 
-``` python
+```python
 reload_raw >> dbt_build_core >> enrich_reviews >> dbt_build_ai
 ```
 
@@ -572,15 +576,15 @@ enrichment.
 
 Builds AI-specific dbt models using:
 
-``` bash
+```bash
 dbt build --select tag:ai
 ```
 
-------------------------------------------------------------------------
+---
 
 # Snowflake Data Model
 
-``` text
+```text
 FOOD_DELIVERY
 │
 ├── RAW
@@ -617,11 +621,11 @@ FOOD_DELIVERY
     └── REVIEW_ENRICHED
 ```
 
-------------------------------------------------------------------------
+---
 
 # dbt Lineage
 
-``` text
+```text
 RAW
  |
  +-- RAW.RESTAURANTS --> STG_RESTAURANTS --> DIM_RESTAURANTS
@@ -650,7 +654,7 @@ RAW
 
 Business marts are derived from the core analytical models:
 
-``` text
+```text
 FCT_ORDERS
     |
     +--> MART_DAILY_CITY_REVENUE
@@ -660,11 +664,11 @@ FCT_ORDERS
     +--> MART_DELIVERY_SLA
 ```
 
-------------------------------------------------------------------------
+---
 
 # Project Structure
 
-``` text
+```text
 food-delivery-data-engineering-ai-analytics-platform/
 │
 ├── ai_layer/
@@ -737,7 +741,7 @@ food-delivery-data-engineering-ai-analytics-platform/
 └── .gitignore
 ```
 
-------------------------------------------------------------------------
+---
 
 # Running the Project
 
@@ -745,19 +749,19 @@ food-delivery-data-engineering-ai-analytics-platform/
 
 From the `airflow` directory:
 
-``` bash
+```bash
 docker compose up -d
 ```
 
 Check the containers:
 
-``` bash
+```bash
 docker compose ps
 ```
 
 Expected services include:
 
-``` text
+```text
 postgres
 airflow-init
 scheduler
@@ -765,101 +769,101 @@ dag-processor
 apiserver
 ```
 
-------------------------------------------------------------------------
+---
 
 ## 2. Open Airflow
 
 Open:
 
-``` text
+```text
 http://localhost:8080
 ```
 
 The main DAG is:
 
-``` text
+```text
 food_delivery_batch
 ```
 
 Trigger the DAG from the Airflow UI.
 
-------------------------------------------------------------------------
+---
 
 # Running dbt
 
 Inside the Airflow scheduler container:
 
-``` bash
+```bash
 docker compose exec scheduler /opt/airflow/dbt_venv/bin/dbt build --project-dir /opt/airflow/dbt/food_delivery_dbt --profiles-dir /opt/airflow/dbt/food_delivery_dbt
 ```
 
 Check AI models:
 
-``` bash
+```bash
 docker compose exec scheduler /opt/airflow/dbt_venv/bin/dbt ls --select tag:ai --project-dir /opt/airflow/dbt/food_delivery_dbt --profiles-dir /opt/airflow/dbt/food_delivery_dbt
 ```
 
 Build only AI models:
 
-``` bash
+```bash
 docker compose exec scheduler /opt/airflow/dbt_venv/bin/dbt build --select tag:ai --project-dir /opt/airflow/dbt/food_delivery_dbt --profiles-dir /opt/airflow/dbt/food_delivery_dbt
 ```
 
 Expected AI model:
 
-``` text
+```text
 food_delivery_dbt.marts.mart_review_insights
 ```
 
-------------------------------------------------------------------------
+---
 
 # Running AI Review Enrichment
 
 Inside the scheduler container:
 
-``` bash
+```bash
 docker compose exec scheduler python /opt/airflow/ai_layer/enrich_reviews.py
 ```
 
 The script sends review text to Gemini and writes structured enrichment
 results into:
 
-``` text
+```text
 FOOD_DELIVERY.AI.REVIEW_ENRICHED
 ```
 
-------------------------------------------------------------------------
+---
 
 # Running the RAG Application
 
 From the `ai_layer` directory:
 
-``` bash
+```bash
 streamlit run rag_chat.py
 ```
 
 Example question:
 
-``` text
+```text
 What are the most common complaints from customers?
 ```
 
 The application retrieves semantically relevant reviews and uses Gemini
 to generate a grounded answer.
 
-------------------------------------------------------------------------
+---
 
 # Running the Text-to-SQL Application
 
 From the `ai_layer` directory:
 
-``` bash
+```bash
 streamlit run text_to_sql.py
 ```
 
 Example questions:
 
-``` text
+```text
 Top 10 cities by GMV
 
 Which cuisine has the most orders?
@@ -873,53 +877,53 @@ Top 10 restaurants by revenue
 Which food items generate the most revenue?
 ```
 
-------------------------------------------------------------------------
+---
 
 # Example Analytics
 
 ### Revenue
 
-``` text
+```text
 Top 10 cities by GMV
 ```
 
 ### Restaurant Performance
 
-``` text
+```text
 Top 10 restaurants by revenue
 ```
 
 ### Delivery
 
-``` text
+```text
 Average delivery time by city, worst first
 ```
 
 ### Payments
 
-``` text
+```text
 What is the cancel rate by payment method?
 ```
 
 ### Food
 
-``` text
+```text
 Which food items generate the most revenue?
 ```
 
 ### Reviews
 
-``` text
+```text
 What are the most common complaints from customers?
 ```
 
-------------------------------------------------------------------------
+---
 
 # AI Design
 
 The project separates the three AI capabilities:
 
-``` text
+```text
                     AI LAYER
                        |
        +---------------+----------------+
@@ -949,82 +953,82 @@ generating an answer.
 Allows business users to query structured Snowflake marts using natural
 language.
 
-------------------------------------------------------------------------
+---
 
 # Data Quality & Governance
 
 The project includes:
 
--   dbt models for standardized transformations
--   dbt data tests
--   Dedicated RAW, STAGING, MARTS and AI schemas
--   SQL safety validation for Text-to-SQL
--   `ON_ERROR = 'CONTINUE'` during raw ingestion
--   Separate AI enrichment layer
--   Airflow dependency management
--   Environment variables for credentials and API keys
--   Dockerized Airflow environment
+- dbt models for standardized transformations
+- dbt data tests
+- Dedicated RAW, STAGING, MARTS and AI schemas
+- SQL safety validation for Text-to-SQL
+- `ON_ERROR = 'CONTINUE'` during raw ingestion
+- Separate AI enrichment layer
+- Airflow dependency management
+- Environment variables for credentials and API keys
+- Dockerized Airflow environment
 
-------------------------------------------------------------------------
+---
 
 # Key Engineering Concepts Demonstrated
 
 ## Data Engineering
 
--   ETL / ELT
--   Data lake architecture
--   Cloud data warehousing
--   Snowflake
--   SQL
--   Dimensional modeling
--   Fact and dimension tables
--   Analytical marts
--   Data transformation
+- ETL / ELT
+- Data lake architecture
+- Cloud data warehousing
+- Snowflake
+- SQL
+- Dimensional modeling
+- Fact and dimension tables
+- Analytical marts
+- Data transformation
 
 ## dbt
 
--   Sources
--   Models
--   `ref()`
--   `source()`
--   Model tags
--   Data tests
--   Lineage
--   Documentation
--   Layered transformation architecture
+- Sources
+- Models
+- `ref()`
+- `source()`
+- Model tags
+- Data tests
+- Lineage
+- Documentation
+- Layered transformation architecture
 
 ## Airflow
 
--   DAGs
--   Task dependencies
--   BashOperator
--   SQLExecuteQueryOperator
--   Scheduled pipelines
--   Docker-based execution
+- DAGs
+- Task dependencies
+- BashOperator
+- SQLExecuteQueryOperator
+- Scheduled pipelines
+- Docker-based execution
 
 ## Generative AI
 
--   LLM-based classification
--   Structured JSON generation
--   Embeddings
--   Semantic search
--   Retrieval-Augmented Generation
--   Natural-language SQL generation
--   LLM safety guardrails
+- LLM-based classification
+- Structured JSON generation
+- Embeddings
+- Semantic search
+- Retrieval-Augmented Generation
+- Natural-language SQL generation
+- LLM safety guardrails
 
 ## Cloud / Data Platform
 
--   Amazon S3
--   Snowflake stages
--   `COPY INTO`
--   Snowflake schemas
--   Warehouse-based processing
+- Amazon S3
+- Snowflake stages
+- `COPY INTO`
+- Snowflake schemas
+- Warehouse-based processing
 
-------------------------------------------------------------------------
+---
 
 # Pipeline Execution
 
-``` text
+```text
                     DAILY AIRFLOW DAG
                            |
                            v
@@ -1054,83 +1058,83 @@ The project includes:
 
 The validated pipeline execution completed successfully:
 
-``` text
+```text
 reload_raw       ✓ SUCCESS
 dbt_build_core   ✓ SUCCESS
 enrich_reviews   ✓ SUCCESS
 dbt_build_ai     ✓ SUCCESS
 ```
 
-------------------------------------------------------------------------
+---
 
 # Project Outcomes
 
 The platform provides:
 
--   A cloud-based data lake and warehouse pipeline
--   Automated data ingestion
--   dbt-powered transformation and modeling
--   Reusable analytical marts
--   Automated AI review enrichment
--   AI-powered review analytics
--   Semantic search over customer reviews
--   Natural-language SQL analytics
--   SQL execution safeguards
--   Airflow orchestration
--   Streamlit business-facing applications
+- A cloud-based data lake and warehouse pipeline
+- Automated data ingestion
+- dbt-powered transformation and modeling
+- Reusable analytical marts
+- Automated AI review enrichment
+- AI-powered review analytics
+- Semantic search over customer reviews
+- Natural-language SQL analytics
+- SQL execution safeguards
+- Airflow orchestration
+- Streamlit business-facing applications
 
-------------------------------------------------------------------------
+---
 
 # Future Improvements
 
 Potential production enhancements include:
 
--   Incremental dbt models
--   Snowflake Dynamic Tables
--   Snowflake-native vector search
--   Batch embedding pipelines
--   Embedding refresh and version management
--   More robust SQL AST-based validation
--   Role-based Snowflake access for Streamlit applications
--   CI/CD for dbt
--   Automated dbt tests in CI
--   Airflow failure notifications
--   Data quality monitoring
--   Observability and pipeline metrics
--   Containerized Streamlit deployment
--   Cloud deployment of the complete platform
+- Incremental dbt models
+- Snowflake Dynamic Tables
+- Snowflake-native vector search
+- Batch embedding pipelines
+- Embedding refresh and version management
+- More robust SQL AST-based validation
+- Role-based Snowflake access for Streamlit applications
+- CI/CD for dbt
+- Automated dbt tests in CI
+- Airflow failure notifications
+- Data quality monitoring
+- Observability and pipeline metrics
+- Containerized Streamlit deployment
+- Cloud deployment of the complete platform
 
-------------------------------------------------------------------------
+---
 
 # Project Highlights
 
 ### End-to-End Data Pipeline
 
-``` text
+```text
 S3 → Snowflake → dbt → Marts
 ```
 
 ### AI Pipeline
 
-``` text
+```text
 Reviews → Gemini → AI.REVIEW_ENRICHED → dbt → MART_REVIEW_INSIGHTS
 ```
 
 ### RAG Pipeline
 
-``` text
+```text
 Reviews → Gemini Embeddings → Vector Store → Similarity Search → Gemini
 ```
 
 ### Text-to-SQL Pipeline
 
-``` text
+```text
 Natural Language → Gemini → SQL → Safety Check → Snowflake → Results
 ```
 
 ### Orchestration
 
-``` text
+```text
 Airflow
    ↓
 RAW Ingestion
@@ -1142,13 +1146,13 @@ Gemini Enrichment
 dbt AI
 ```
 
-------------------------------------------------------------------------
+---
 
 # Repository
 
 **Repository name:**
 
-``` text
+```text
 food-delivery-data-engineering-ai-analytics-platform
 ```
 
@@ -1156,14 +1160,14 @@ food-delivery-data-engineering-ai-analytics-platform
 
 ## Food Delivery Data Engineering & AI Analytics Platform
 
-------------------------------------------------------------------------
+---
 
 # What This Project Demonstrates
 
 > **A complete modern data platform where traditional Data Engineering
 > forms the foundation for Generative AI and self-service analytics.**
 
-``` text
+```text
              DATA ENGINEERING FOUNDATION
                          |
        +-----------------+-----------------+
@@ -1194,3 +1198,5 @@ food-delivery-data-engineering-ai-analytics-platform
 This project combines a production-style **Data Engineering foundation**
 with three integrated AI capabilities: **review enrichment,
 conversational RAG, and natural-language Text-to-SQL analytics**.
+
+)
