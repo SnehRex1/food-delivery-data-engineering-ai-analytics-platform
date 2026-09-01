@@ -1306,6 +1306,12 @@ Natural-language analytics
 
 ---
 
+## 📽️ Video
+
+Prefer watching over reading code? Here’s a [full video walkthrough](https://www.loom.com/share/e66a193a3b33402b9632f4deb77d900a) of the platform in action.
+
+---
+
 ## 📄 License
 
 This project is intended as a portfolio / educational Data Engineering and AI Analytics implementation.
